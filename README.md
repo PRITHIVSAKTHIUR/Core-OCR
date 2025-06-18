@@ -23,6 +23,22 @@ Adopts a Structure-Recognition-Relation (SRR) triplet paradigm, which simplifies
 ### coreOCR-7B-050325-preview
 Fine-tuned version of Qwen2-VL-7B, optimized for Document-Level Optical Character Recognition (OCR), long-context vision-language understanding, and accurate image-to-text conversion with mathematical LaTeX formatting.
 
+---
+
+## Image Inference
+
+![ROAfZvsoUpDMB1YzezCnU](https://github.com/user-attachments/assets/4e1524dd-bde9-4cd1-9ac6-2ca2453490e2)
+![hT8d2059Jkke4sAjD1fyj](https://github.com/user-attachments/assets/01a6105b-5468-404d-86bb-53bc673de639)
+![HmCbs0HRM4uuqaUDaZz3M](https://github.com/user-attachments/assets/f3d0a6a7-aba8-4eda-b069-3bc9772e3d90)
+
+---
+
+## Video Inference
+
+https://github.com/user-attachments/assets/291e9ef0-d7a5-49ca-a90a-190c90e48df2
+
+---
+
 ## Installation
 
 1. Clone the repository:

@@ -28,7 +28,13 @@ Fine-tuned version of Qwen2-VL-7B, optimized for Document-Level Optical Characte
 ## Image Inference
 
 ![ROAfZvsoUpDMB1YzezCnU](https://github.com/user-attachments/assets/4e1524dd-bde9-4cd1-9ac6-2ca2453490e2)
+
+---
+
 ![hT8d2059Jkke4sAjD1fyj](https://github.com/user-attachments/assets/01a6105b-5468-404d-86bb-53bc673de639)
+
+---
+
 ![HmCbs0HRM4uuqaUDaZz3M](https://github.com/user-attachments/assets/f3d0a6a7-aba8-4eda-b069-3bc9772e3d90)
 
 ---

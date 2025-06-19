@@ -221,6 +221,10 @@ cd Core-OCR
 pip install -e .
 ```
 
+## Repository
+
+GitHub: https://github.com/PRITHIVSAKTHIUR/Core-OCR.git
+
 ## License
 
 This project is open source. Please refer to the LICENSE file for specific terms and conditions.
@@ -253,6 +257,4 @@ For questions, issues, or feature requests:
 - Check existing documentation
 - Review model-specific guides on Hugging Face
 
-## Repository
 
-GitHub: https://github.com/PRITHIVSAKTHIUR/Core-OCR.git

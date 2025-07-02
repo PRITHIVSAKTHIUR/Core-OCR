@@ -15,6 +15,7 @@ import cv2
 
 from transformers import (
     Qwen2VLForConditionalGeneration,
+    Glm4vForConditionalGeneration,
     Qwen2_5_VLForConditionalGeneration,
     AutoModelForImageTextToText,
     AutoProcessor,
@@ -47,8 +48,8 @@ model_x = Qwen2VLForConditionalGeneration.from_pretrained(
     torch_dtype=torch.float16
 ).to(device).eval()
 
-#--------------------------------------------------------------------------------------#
-#Load MonkeyOCR
+#-----------------------------subfolder-----------------------------#
+# Load MonkeyOCR
 MODEL_ID_G = "echo840/MonkeyOCR"
 SUBFOLDER = "Recognition"
 
@@ -64,7 +65,16 @@ model_g = Qwen2_5_VLForConditionalGeneration.from_pretrained(
     subfolder=SUBFOLDER,
     torch_dtype=torch.float16
 ).to(device).eval()
-#--------------------------------------------------------------------------------------#
+#-----------------------------subfolder-----------------------------#
+
+# Load GLM-4.1V-9B-Thinking
+MODEL_ID_O = "THUDM/GLM-4.1V-9B-Thinking"
+processor_o = AutoProcessor.from_pretrained(MODEL_ID_O, trust_remote_code=True)
+model_o = Glm4vForConditionalGeneration.from_pretrained(
+    MODEL_ID_O,
+    trust_remote_code=True,
+    torch_dtype=torch.float16
+).to(device).eval()
 
 def downsample_video(video_path):
     """
@@ -96,6 +106,7 @@ def generate_image(model_name: str, text: str, image: Image.Image,
                    repetition_penalty: float = 1.2):
     """
     Generates responses using the selected model for image input.
+    Yields raw text and Markdown-formatted text.
     """
     if model_name == "docscopeOCR-7B-050425-exp":
         processor = processor_m
@@ -106,12 +117,15 @@ def generate_image(model_name: str, text: str, image: Image.Image,
     elif model_name == "MonkeyOCR-Recognition":
         processor = processor_g
         model = model_g
+    elif model_name == "GLM-4.1V-9B-Thinking":
+        processor = processor_o
+        model = model_o
     else:
-        yield "Invalid model selected."
+        yield "Invalid model selected.", "Invalid model selected."
         return
 
     if image is None:
-        yield "Please upload an image."
+        yield "Please upload an image.", "Please upload an image."
         return
 
     messages = [{
@@ -139,7 +153,7 @@ def generate_image(model_name: str, text: str, image: Image.Image,
         buffer += new_text
         buffer = buffer.replace("<|im_end|>", "")
         time.sleep(0.01)
-        yield buffer
+        yield buffer, buffer
 
 @spaces.GPU
 def generate_video(model_name: str, text: str, video_path: str,
@@ -150,6 +164,7 @@ def generate_video(model_name: str, text: str, video_path: str,
                    repetition_penalty: float = 1.2):
     """
     Generates responses using the selected model for video input.
+    Yields raw text and Markdown-formatted text.
     """
     if model_name == "docscopeOCR-7B-050425-exp":
         processor = processor_m
@@ -160,12 +175,15 @@ def generate_video(model_name: str, text: str, video_path: str,
     elif model_name == "MonkeyOCR-Recognition":
         processor = processor_g
         model = model_g
+    elif model_name == "GLM-4.1V-9B-Thinking":
+        processor = processor_o
+        model = model_o
     else:
-        yield "Invalid model selected."
+        yield "Invalid model selected.", "Invalid model selected."
         return
 
     if video_path is None:
-        yield "Please upload a video."
+        yield "Please upload a video.", "Please upload a video."
         return
 
     frames = downsample_video(video_path)
@@ -204,18 +222,20 @@ def generate_video(model_name: str, text: str, video_path: str,
         buffer += new_text
         buffer = buffer.replace("<|im_end|>", "")
         time.sleep(0.01)
-        yield buffer
+        yield buffer, buffer
 
 # Define examples for image and video inference
 image_examples = [
-    ["fill the correct numbers", "example/image3.png"],
-    ["ocr the image", "example/image1.png"],
-    ["explain the scene", "example/image2.jpg"],
+    ["Fill the correct numbers", "images/image3.png"],
+    ["Extract it as a table for README.md", "images/image0.jpg"],
+    ["Explain the scene", "images/image2.jpg"],
+    ["OCR the image", "images/image1.png"]
 ]
 
 video_examples = [
-    ["Explain the ad in detail", "example/1.mp4"],
-    ["Identify the main actions in the coca cola ad...", "example/2.mp4"]
+    ["Explain the video in detail", "videos/2.mp4"],
+    ["Explain the video in detail", "videos/1.mp4"]
+
 ]
 
 css = """
@@ -225,6 +245,11 @@ css = """
 }
 .submit-btn:hover {
     background-color: #3498db !important;
+}
+.canvas-output {
+    border: 2px solid #4682B4;
+    border-radius: 10px;
+    padding: 20px;
 }
 """
 
@@ -255,29 +280,37 @@ with gr.Blocks(css=css, theme="bethecloud/storj_theme") as demo:
                 temperature = gr.Slider(label="Temperature", minimum=0.1, maximum=4.0, step=0.1, value=0.6)
                 top_p = gr.Slider(label="Top-p (nucleus sampling)", minimum=0.05, maximum=1.0, step=0.05, value=0.9)
                 top_k = gr.Slider(label="Top-k", minimum=1, maximum=1000, step=1, value=50)
-                repetition_penalty = gr.Slider(label="Repetition penalty", minimum=1.0, maximum=2.0, step=0.05, value=1.2)
+                repetition_cost = gr.Slider(label="Repetition penalty", minimum=1.0, maximum=2.0, step=0.05, value=1.2)
+                
         with gr.Column():
-            output = gr.Textbox(label="Output", interactive=False, lines=3, scale=2)
+            with gr.Column(elem_classes="canvas-output"):
+                gr.Markdown("## Result.Md")
+                output = gr.Textbox(label="Raw Output Stream", interactive=False, lines=2)
+
+                with gr.Accordion("Formatted Result (Result.md)", open=False):
+                    markdown_output = gr.Markdown(label="Formatted Result (Result.Md)")
+                    
             model_choice = gr.Radio(
-                choices=["docscopeOCR-7B-050425-exp", "MonkeyOCR-Recognition", "coreOCR-7B-050325-preview"],
+                choices=["GLM-4.1V-9B-Thinking", "docscopeOCR-7B-050425-exp", "MonkeyOCR-Recognition", "coreOCR-7B-050325-preview"],
                 label="Select Model",
-                value="docscopeOCR-7B-050425-exp"
+                value="GLM-4.1V-9B-Thinking"
             )
-            
             gr.Markdown("**Model Info 💻** | [Report Bug](https://huggingface.co/spaces/prithivMLmods/core-OCR/discussions)")
+            gr.Markdown("> [GLM-4.1V-9B-Thinking](https://huggingface.co/THUDM/GLM-4.1V-9B-Thinking): GLM-4.1V-9B-Thinking, designed to explore the upper limits of reasoning in vision-language models. By introducing a thinking paradigm and leveraging reinforcement learning, the model significantly enhances its capabilities. It achieves state-of-the-art performance among 10B-parameter VLMs.")
             gr.Markdown("> [docscopeOCR-7B-050425-exp](https://huggingface.co/prithivMLmods/docscopeOCR-7B-050425-exp): The docscopeOCR-7B-050425-exp model is a fine-tuned version of Qwen2.5-VL-7B-Instruct, optimized for Document-Level Optical Character Recognition (OCR), long-context vision-language understanding, and accurate image-to-text conversion with mathematical LaTeX formatting.")
             gr.Markdown("> [MonkeyOCR](https://huggingface.co/echo840/MonkeyOCR): MonkeyOCR adopts a Structure-Recognition-Relation (SRR) triplet paradigm, which simplifies the multi-tool pipeline of modular approaches while avoiding the inefficiency of using large multimodal models for full-page document processing.")
             gr.Markdown("> [coreOCR-7B-050325-preview](https://huggingface.co/prithivMLmods/coreOCR-7B-050325-preview): The coreOCR-7B-050325-preview model is a fine-tuned version of Qwen2-VL-7B, optimized for Document-Level Optical Character Recognition (OCR), long-context vision-language understanding, and accurate image-to-text conversion with mathematical LaTeX formatting.")
-
+            gr.Markdown(">⚠️note: all the models in space are not guaranteed to perform well in video inference use cases.")  
+                        
     image_submit.click(
         fn=generate_image,
-        inputs=[model_choice, image_query, image_upload, max_new_tokens, temperature, top_p, top_k, repetition_penalty],
-        outputs=output
+        inputs=[model_choice, image_query, image_upload, max_new_tokens, temperature, top_p, top_k, repetition_cost],
+        outputs=[output, markdown_output]
     )
     video_submit.click(
         fn=generate_video,
-        inputs=[model_choice, video_query, video_upload, max_new_tokens, temperature, top_p, top_k, repetition_penalty],
-        outputs=output
+        inputs=[model_choice, video_query, video_upload, max_new_tokens, temperature, top_p, top_k, repetition_cost],
+        outputs=[output, markdown_output]
     )
 
 if __name__ == "__main__":

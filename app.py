@@ -15,7 +15,6 @@ import cv2
 
 from transformers import (
     Qwen2VLForConditionalGeneration,
-    Glm4vForConditionalGeneration,
     Qwen2_5_VLForConditionalGeneration,
     AutoModelForImageTextToText,
     AutoProcessor,
@@ -67,10 +66,10 @@ model_g = Qwen2_5_VLForConditionalGeneration.from_pretrained(
 ).to(device).eval()
 #-----------------------------subfolder-----------------------------#
 
-# Load GLM-4.1V-9B-Thinking
-MODEL_ID_O = "THUDM/GLM-4.1V-9B-Thinking"
+# Load Perseus-Doc-vl-0712
+MODEL_ID_O = "prithivMLmods/Perseus-Doc-vl-0712"
 processor_o = AutoProcessor.from_pretrained(MODEL_ID_O, trust_remote_code=True)
-model_o = Glm4vForConditionalGeneration.from_pretrained(
+model_o = Qwen2_5_VLForConditionalGeneration.from_pretrained(
     MODEL_ID_O,
     trust_remote_code=True,
     torch_dtype=torch.float16
@@ -117,7 +116,7 @@ def generate_image(model_name: str, text: str, image: Image.Image,
     elif model_name == "MonkeyOCR-Recognition":
         processor = processor_g
         model = model_g
-    elif model_name == "GLM-4.1V-9B-Thinking":
+    elif model_name == "Perseus-Doc-vl-0712":
         processor = processor_o
         model = model_o
     else:
@@ -175,7 +174,7 @@ def generate_video(model_name: str, text: str, video_path: str,
     elif model_name == "MonkeyOCR-Recognition":
         processor = processor_g
         model = model_g
-    elif model_name == "GLM-4.1V-9B-Thinking":
+    elif model_name == "Perseus-Doc-vl-0712":
         processor = processor_o
         model = model_o
     else:
@@ -226,8 +225,8 @@ def generate_video(model_name: str, text: str, video_path: str,
 
 # Define examples for image and video inference
 image_examples = [
+    ["Explain the doc[table] in detail.", "images/0.png"],
     ["Fill the correct numbers", "images/image3.png"],
-    ["Extract it as a table for README.md", "images/image0.jpg"],
     ["Explain the scene", "images/image2.jpg"],
     ["OCR the image", "images/image1.png"]
 ]
@@ -255,7 +254,7 @@ css = """
 
 # Create the Gradio Interface
 with gr.Blocks(css=css, theme="bethecloud/storj_theme") as demo:
-    gr.Markdown("# **[core OCR](https://huggingface.co/collections/prithivMLmods/core-and-docscope-ocr-models-6816d7f1bde3f911c6c852bc)**")
+    gr.Markdown("# **[core OCR](https://huggingface.co/collections/prithivMLmods/multimodal-implementations-67c9982ea04b39f0608badb0)**")
     with gr.Row():
         with gr.Column():
             with gr.Tabs():
@@ -284,21 +283,21 @@ with gr.Blocks(css=css, theme="bethecloud/storj_theme") as demo:
                 
         with gr.Column():
             with gr.Column(elem_classes="canvas-output"):
-                gr.Markdown("## Result.Md")
-                output = gr.Textbox(label="Raw Output Stream", interactive=False, lines=2)
+                gr.Markdown("## Output")
+                output = gr.Textbox(label="Raw Output Stream", interactive=False, lines=2, show_copy_button=True)
 
-                with gr.Accordion("Formatted Result (Result.md)", open=False):
-                    markdown_output = gr.Markdown(label="Formatted Result (Result.Md)")
+                with gr.Accordion("(Result.md)", open=False):
+                    markdown_output = gr.Markdown(label="(Result.Md)")
                     
             model_choice = gr.Radio(
-                choices=["GLM-4.1V-9B-Thinking", "docscopeOCR-7B-050425-exp", "MonkeyOCR-Recognition", "coreOCR-7B-050325-preview"],
+                choices=["docscopeOCR-7B-050425-exp", "MonkeyOCR-Recognition", "coreOCR-7B-050325-preview", "Perseus-Doc-vl-0712"],
                 label="Select Model",
-                value="GLM-4.1V-9B-Thinking"
+                value="docscopeOCR-7B-050425-exp"
             )
             gr.Markdown("**Model Info 💻** | [Report Bug](https://huggingface.co/spaces/prithivMLmods/core-OCR/discussions)")
-            gr.Markdown("> [GLM-4.1V-9B-Thinking](https://huggingface.co/THUDM/GLM-4.1V-9B-Thinking): GLM-4.1V-9B-Thinking, designed to explore the upper limits of reasoning in vision-language models. By introducing a thinking paradigm and leveraging reinforcement learning, the model significantly enhances its capabilities. It achieves state-of-the-art performance among 10B-parameter VLMs.")
             gr.Markdown("> [docscopeOCR-7B-050425-exp](https://huggingface.co/prithivMLmods/docscopeOCR-7B-050425-exp): The docscopeOCR-7B-050425-exp model is a fine-tuned version of Qwen2.5-VL-7B-Instruct, optimized for Document-Level Optical Character Recognition (OCR), long-context vision-language understanding, and accurate image-to-text conversion with mathematical LaTeX formatting.")
             gr.Markdown("> [MonkeyOCR](https://huggingface.co/echo840/MonkeyOCR): MonkeyOCR adopts a Structure-Recognition-Relation (SRR) triplet paradigm, which simplifies the multi-tool pipeline of modular approaches while avoiding the inefficiency of using large multimodal models for full-page document processing.")
+            gr.Markdown("> [Perseus-Doc-vl-0712](https://huggingface.co/prithivMLmods/Perseus-Doc-vl-0712): The Perseus-Doc-vl-0712 model is a fine-tuned version of Qwen2.5-VL-7B-Instruct, optimized for Document Retrieval, Content Extraction, and Analysis Recognition. Built on top of the Qwen2.5-VL architecture, this model enhances document comprehension capabilities")
             gr.Markdown("> [coreOCR-7B-050325-preview](https://huggingface.co/prithivMLmods/coreOCR-7B-050325-preview): The coreOCR-7B-050325-preview model is a fine-tuned version of Qwen2-VL-7B, optimized for Document-Level Optical Character Recognition (OCR), long-context vision-language understanding, and accurate image-to-text conversion with mathematical LaTeX formatting.")
             gr.Markdown(">⚠️note: all the models in space are not guaranteed to perform well in video inference use cases.")  
                         

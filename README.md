@@ -7,7 +7,7 @@ HF Demo: https://huggingface.co/spaces/prithivMLmods/core-OCR
 A specialized optical character recognition (OCR) application built on advanced vision-language models, designed for document-level OCR, long-context understanding, and mathematical LaTeX formatting. Supports both image and video processing with multiple state-of-the-art models.
 
 > [!important] 
-note: remove kernels and flash_attn3 implementation if you are using it on *non-hopper* architecture gpus.
+note: remove kernels and flash_attn2 implementation if you are using it on *non-hopper* architecture gpus.
 
  <img width="1757" height="1225" alt="Screenshot 2025-10-16 at 11-41-48 core OCR - a Hugging Face Space by prithivMLmods" src="https://github.com/user-attachments/assets/cfeadabe-c2ff-4d38-96e8-00da4ce61768" />
 

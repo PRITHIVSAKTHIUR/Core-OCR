@@ -1,8 +1,15 @@
 # **Core OCR**
 
- <img width="1757" height="1225" alt="Screenshot 2025-10-16 at 11-41-48 core OCR - a Hugging Face Space by prithivMLmods" src="https://github.com/user-attachments/assets/cfeadabe-c2ff-4d38-96e8-00da4ce61768" />
+> [!note]
+HF Demo: https://huggingface.co/spaces/prithivMLmods/core-OCR
+
 
 A specialized optical character recognition (OCR) application built on advanced vision-language models, designed for document-level OCR, long-context understanding, and mathematical LaTeX formatting. Supports both image and video processing with multiple state-of-the-art models.
+
+> [!important] 
+note: remove kernels and flash_attn3 implementation if you are using it on *non-hopper* architecture gpus.
+
+ <img width="1757" height="1225" alt="Screenshot 2025-10-16 at 11-41-48 core OCR - a Hugging Face Space by prithivMLmods" src="https://github.com/user-attachments/assets/cfeadabe-c2ff-4d38-96e8-00da4ce61768" />
 
 ## Features
 
@@ -57,13 +64,24 @@ cd Core-OCR
 
 2. Install required dependencies:
 ```bash
-pip install torch torchvision torchaudio
-pip install transformers
-pip install gradio
-pip install spaces
-pip install opencv-python
-pip install pillow
-pip install numpy
+git+https://github.com/huggingface/transformers.git@v4.57.6
+git+https://github.com/huggingface/accelerate.git
+git+https://github.com/huggingface/peft.git
+transformers-stream-generator
+huggingface_hub
+qwen-vl-utils
+sentencepiece
+opencv-python
+torch==2.8.0
+torchvision
+matplotlib
+requests
+kernels
+hf_xet
+spaces
+pillow
+gradio # - gradio@6.3.0
+av
 ```
 
 ## Usage

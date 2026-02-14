@@ -48,12 +48,6 @@ Fine-tuned version of Qwen2-VL-7B, optimized for Document-Level Optical Characte
 
 ---
 
-## Video Inference
-
-https://github.com/user-attachments/assets/291e9ef0-d7a5-49ca-a90a-190c90e48df2
-
----
-
 ## Installation
 
 1. Clone the repository:
@@ -105,18 +99,6 @@ The application will launch a Gradio interface accessible through your web brows
 4. Select your preferred model from the radio buttons
 5. Click "Submit" to process
 
-### Video OCR Processing
-
-1. Navigate to the "Video Inference" tab
-2. Enter your query:
-   - "Explain the ad in detail" - For advertisement analysis
-   - "Identify the main actions in the coca cola ad..." - For action recognition
-3. Upload a video file (MP4, AVI, MOV supported)
-4. Select your preferred model
-5. Click "Submit" to process
-
-The application automatically extracts 10 evenly distributed frames from videos for comprehensive analysis.
-
 ## Advanced Configuration
 
 ### Generation Parameters
@@ -149,13 +131,6 @@ The application automatically extracts 10 evenly distributed frames from videos 
 - **Context Length**: Up to 4096 tokens input context
 - **Streaming**: Real-time text generation with TextIteratorStreamer
 
-### Video Processing Details
-
-- **Frame Extraction**: 10 evenly distributed frames per video
-- **Timestamp Preservation**: Each frame tagged with temporal information
-- **Format Support**: MP4, AVI, MOV, and other OpenCV-compatible formats
-- **Resolution**: Maintains original aspect ratio with PIL processing
-
 ## Examples and Use Cases
 
 ### Document Processing
@@ -169,12 +144,6 @@ The application automatically extracts 10 evenly distributed frames from videos 
 - Formula recognition and conversion
 - Mathematical problem solving
 - Scientific notation processing
-
-### Video Analysis
-- Advertisement content analysis
-- Educational video transcription
-- Presentation slide extraction
-- Tutorial step identification
 
 ## API Reference
 
@@ -213,8 +182,7 @@ Extracts evenly distributed frames from video files with timestamps.
 
 1. **GPU Memory Error**: Reduce max_new_tokens or use CPU inference
 2. **Model Loading Failed**: Ensure sufficient disk space and internet connection
-3. **Video Processing Slow**: Consider reducing video resolution or length
-4. **Out of Memory**: Lower batch size or use smaller models
+3. **Out of Memory**: Lower batch size or use smaller models
 
 ### Performance Tips
 
@@ -249,25 +217,11 @@ GitHub: https://github.com/PRITHIVSAKTHIUR/Core-OCR.git
 
 This project is open source. Please refer to the LICENSE file for specific terms and conditions.
 
-## Citation
-
-If you use Core OCR in your research or projects, please cite:
-
-```bibtex
-@software{core_ocr_2024,
-  title={Core OCR: Advanced Document-Level OCR with Vision-Language Models},
-  author={PRITHIVSAKTHIUR},
-  year={2024},
-  url={https://github.com/PRITHIVSAKTHIUR/Core-OCR}
-}
-```
-
 ## Acknowledgments
 
 - Hugging Face for the Transformers library and model hosting
 - Qwen team for the base vision-language models
 - Gradio for the web interface framework
-- OpenCV community for video processing capabilities
 - The broader OCR and computer vision research community
 
 ## Support
@@ -276,5 +230,3 @@ For questions, issues, or feature requests:
 - Open an issue on GitHub
 - Check existing documentation
 - Review model-specific guides on Hugging Face
-
-

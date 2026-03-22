@@ -13,6 +13,6 @@ requests
 kernels
 hf_xet
 spaces
-pillow
 gradio
+pillow
 av
